@@ -1,0 +1,2620 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>시간대별 친환경 전기 사용 알리미</title>
+    <meta
+      name="description"
+      content="시간대별 탄소배출계수, 신재생에너지 비중, 전기요금을 비교하고 세탁기·건조기·전기차 충전 등 가전 사용 최적 시간을 추천하는 모바일 우선 앱"
+    />
+    <meta property="og:title" content="시간대별 친환경 전기 사용 알리미" />
+    <meta
+      property="og:description"
+      content="낮에는 태양광 비중이 높아 탄소배출이 적고, 저녁에는 화력발전 의존도가 높아집니다. 가전별 최적 친환경 사용 시간을 확인하세요."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-page: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f1f5f9;
+        --border-default: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --emerald-50: #ecfdf5;
+        --emerald-200: #a7f3d0;
+        --emerald-600: #059669;
+        --emerald-700: #047857;
+        --emerald-800: #065f46;
+        --emerald-900: #064e3b;
+        --amber-50: #fffbeb;
+        --amber-300: #fcd34d;
+        --amber-600: #d97706;
+        --amber-700: #b45309;
+        --rose-50: #fff1f2;
+        --rose-200: #fecdd3;
+        --rose-300: #fda4af;
+        --rose-600: #e11d48;
+        --rose-700: #be123c;
+        --rose-800: #9f1239;
+        --font-sans: 'Plus Jakarta Sans', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono: 'JetBrains Mono', 'Plus Jakarta Sans', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font-sans);
+        background-color: var(--bg-page);
+        color: var(--text-primary);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+        padding-bottom: 5.5rem;
+      }
+
+      ::selection {
+        background-color: #d1fae5;
+        color: #064e3b;
+      }
+
+      .mono-tabular {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      button, select {
+        font-family: inherit;
+      }
+
+      button:focus-visible,
+      select:focus-visible,
+      a:focus-visible {
+        outline: 2px solid var(--emerald-600);
+        outline-offset: 2px;
+      }
+
+      /* Top Bar */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border-default);
+      }
+
+      .topbar-inner {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 0 1rem;
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .brand-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: var(--text-primary);
+        min-width: 0;
+      }
+
+      .brand-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.5rem;
+        background: var(--emerald-700);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .brand-text {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .desktop-nav {
+        display: none;
+        align-items: center;
+        gap: 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .desktop-nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.15s ease;
+      }
+
+      .desktop-nav a:hover {
+        color: var(--text-primary);
+      }
+
+      .btn-csv-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        min-height: 2.5rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.5rem;
+        border: none;
+        background: var(--emerald-700);
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+      }
+
+      .btn-csv-top:hover {
+        background: var(--emerald-800);
+      }
+
+      /* Main Layout */
+      .container {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 1.25rem 1rem 0;
+      }
+
+      .top-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+
+      .col-overview {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .col-data {
+        margin-top: 1.5rem;
+      }
+
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: 1rem;
+        padding: 1rem;
+      }
+
+      /* Status Banner */
+      .status-banner {
+        border-radius: 1rem;
+        border: 1px solid var(--border-default);
+        padding: 1rem;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+      }
+
+      .status-banner.grade-good {
+        background: rgba(236, 253, 245, 0.75);
+        border-color: var(--emerald-200);
+      }
+
+      .status-banner.grade-moderate {
+        background: rgba(255, 251, 235, 0.8);
+        border-color: var(--amber-300);
+      }
+
+      .status-banner.grade-bad {
+        background: rgba(255, 241, 242, 0.75);
+        border-color: var(--rose-300);
+      }
+
+      .banner-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem 0.75rem;
+      }
+
+      .banner-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .banner-meta .nowrap {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .banner-meta .source-label {
+        color: var(--text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .hour-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .hour-select {
+        min-height: 2.75rem;
+        padding: 0.375rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: 0.5rem;
+        cursor: pointer;
+      }
+
+      .btn-reset-hour {
+        min-height: 2.75rem;
+        padding: 0.375rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: 0.5rem;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .btn-reset-hour:hover {
+        background: var(--bg-page);
+      }
+
+      .verdict-row {
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .verdict-icon {
+        flex-shrink: 0;
+        margin-top: 0.125rem;
+      }
+
+      .grade-good .verdict-icon,
+      .grade-good .verdict-title {
+        color: var(--emerald-700);
+      }
+
+      .grade-moderate .verdict-icon,
+      .grade-moderate .verdict-title {
+        color: var(--amber-700);
+      }
+
+      .grade-bad .verdict-icon,
+      .grade-bad .verdict-title {
+        color: var(--rose-700);
+      }
+
+      .verdict-title {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+      }
+
+      .verdict-desc {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        color: #334155;
+        line-height: 1.5;
+      }
+
+      .kpi-grid {
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba(203, 213, 225, 0.75);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+      }
+
+      .kpi-label {
+        font-size: 0.6875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      .kpi-val {
+        margin: 0.125rem 0 0;
+        display: flex;
+        align-items: baseline;
+        gap: 0.125rem;
+      }
+
+      .kpi-num {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .kpi-unit {
+        font-size: 0.6875rem;
+        color: var(--text-muted);
+      }
+
+      /* 24h Bar Chart */
+      .chart-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .section-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+
+      .section-sub {
+        margin: 0.125rem 0 0;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .legend-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #334155;
+      }
+
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+      }
+
+      .swatch {
+        width: 0.625rem;
+        height: 0.625rem;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      .swatch-good { background: var(--emerald-600); }
+      .swatch-moderate { background: #f59e0b; }
+      .swatch-bad { background: var(--rose-600); }
+
+      .rec-indicator-note {
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--emerald-800);
+        font-weight: 600;
+      }
+
+      .rec-bar-pill {
+        width: 0.75rem;
+        height: 0.25rem;
+        border-radius: 999px;
+        background: var(--emerald-700);
+        flex-shrink: 0;
+      }
+
+      .chart-bars {
+        margin-top: 0.75rem;
+        height: 9rem;
+        display: grid;
+        grid-template-columns: repeat(24, minmax(0, 1fr));
+        gap: 3px;
+        align-items: end;
+        padding-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .bar-col {
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .bar-btn {
+        position: relative;
+        width: 100%;
+        border: none;
+        border-radius: 4px 4px 2px 2px;
+        padding: 0;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .bar-btn.bar-good { background: var(--emerald-600); }
+      .bar-btn.bar-good:hover { background: #10b981; }
+      .bar-btn.bar-moderate { background: #f59e0b; }
+      .bar-btn.bar-moderate:hover { background: #fbbf24; }
+      .bar-btn.bar-bad { background: var(--rose-600); }
+      .bar-btn.bar-bad:hover { background: #f43f5e; }
+
+      .bar-btn.is-current {
+        box-shadow: 0 0 0 2px var(--text-primary);
+        z-index: 2;
+      }
+
+      .bar-btn.is-selected {
+        box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #cbd5e1;
+        z-index: 3;
+      }
+
+      .bar-btn.is-dimmed {
+        opacity: 0.78;
+      }
+
+      .bar-rec-dot {
+        position: absolute;
+        top: -0.5rem;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: 82%;
+        height: 0.25rem;
+        border-radius: 999px;
+        background: var(--emerald-700);
+        pointer-events: none;
+      }
+
+      .bar-tick {
+        position: absolute;
+        bottom: -1.35rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.625rem;
+        color: var(--text-muted);
+        user-select: none;
+      }
+
+      .bar-tick.is-current-tick {
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .chart-detail-strip {
+        margin-top: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border-default);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .detail-left {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .detail-hour {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .detail-right {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1rem;
+        color: #334155;
+      }
+
+      .detail-right strong {
+        color: var(--text-primary);
+      }
+
+      /* Mobile Quick Jump Card */
+      .mobile-quick-jump {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: 1rem;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .btn-dark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 2.75rem;
+        padding: 0.625rem 1rem;
+        border-radius: 0.75rem;
+        border: none;
+        background: var(--text-primary);
+        color: #ffffff;
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+      }
+
+      .btn-dark:hover {
+        background: #1e293b;
+      }
+
+      /* Appliance Recommender */
+      .appliance-list {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      .appliance-btn {
+        width: 100%;
+        min-height: 3.125rem;
+        padding: 0.5rem 0.875rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border-default);
+        background: var(--bg-surface);
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
+      }
+
+      .appliance-btn:hover {
+        background: var(--bg-page);
+      }
+
+      .appliance-btn.is-selected {
+        border-color: var(--emerald-600);
+        background: rgba(236, 253, 245, 0.75);
+        color: var(--text-primary);
+      }
+
+      .appliance-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+      }
+
+      .appliance-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 0.5rem;
+        background: var(--bg-subtle);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .appliance-btn.is-selected .appliance-icon {
+        background: var(--emerald-700);
+        color: #ffffff;
+      }
+
+      .appliance-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .appliance-spec {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .appliance-kwh {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        flex-shrink: 0;
+      }
+
+      .usual-hour-row {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-default);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .usual-hour-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+        white-space: nowrap;
+      }
+
+      .usual-hour-select {
+        min-height: 2.75rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: 0.75rem;
+        cursor: pointer;
+      }
+
+      .rec-summary {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-default);
+      }
+
+      .rec-meta-line {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .rec-range-row {
+        margin-top: 0.375rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .rec-range-big {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .savings-box {
+        margin-top: 1rem;
+        border-radius: 0.75rem;
+        background: rgba(236, 253, 245, 0.75);
+        border: 1px solid var(--emerald-200);
+        padding: 1rem;
+      }
+
+      .savings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .savings-col-left {
+        padding-right: 0.75rem;
+        border-right: 1px solid var(--emerald-200);
+      }
+
+      .savings-col-right {
+        padding-left: 1rem;
+      }
+
+      .savings-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      .savings-big {
+        margin-top: 0.25rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.15;
+        color: var(--emerald-700);
+      }
+
+      .savings-col-right .savings-big {
+        color: var(--emerald-800);
+      }
+
+      .savings-sub {
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #334155;
+      }
+
+      .btn-formula-toggle {
+        margin-top: 0.75rem;
+        padding-top: 0.625rem;
+        border-top: 1px solid rgba(167, 243, 208, 0.8);
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        background: transparent;
+        width: 100%;
+        min-height: 2.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--emerald-900);
+        cursor: pointer;
+      }
+
+      .btn-formula-toggle:hover {
+        color: var(--emerald-700);
+      }
+
+      .btn-formula-toggle svg {
+        transition: transform 0.15s ease;
+      }
+
+      .btn-formula-toggle[aria-expanded='true'] svg {
+        transform: rotate(180deg);
+      }
+
+      .formula-panel {
+        margin-top: 0.625rem;
+        padding-top: 0.625rem;
+        border-top: 1px solid rgba(167, 243, 208, 0.7);
+        font-size: 0.75rem;
+        color: #334155;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .formula-divider {
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(167, 243, 208, 0.6);
+      }
+
+      .compare-grid {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-top: 1px solid var(--border-default);
+        border-bottom: 1px solid var(--border-default);
+        padding: 0.75rem 0;
+      }
+
+      .compare-left {
+        padding-right: 0.75rem;
+        border-right: 1px solid var(--border-default);
+      }
+
+      .compare-right {
+        padding-left: 1rem;
+      }
+
+      .top3-wrap {
+        margin-top: 1rem;
+      }
+
+      .top3-list {
+        border-top: 1px solid var(--bg-subtle);
+      }
+
+      .top3-btn {
+        width: 100%;
+        min-height: 2.75rem;
+        padding: 0.5rem 0.25rem;
+        border: none;
+        border-bottom: 1px solid var(--bg-subtle);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .top3-btn:hover {
+        background: var(--bg-page);
+      }
+
+      /* Data & CSV Section */
+      .csv-header {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .csv-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        min-height: 2.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+        border: none;
+        background: var(--emerald-700);
+        color: #ffffff;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .btn-primary:hover {
+        background: var(--emerald-800);
+      }
+
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        min-height: 2.75rem;
+        padding: 0.5rem 0.875rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-surface);
+        color: #334155;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .btn-secondary:hover {
+        background: var(--bg-page);
+      }
+
+      .csv-alert {
+        margin-top: 1rem;
+        padding: 0.875rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--rose-200);
+        background: var(--rose-50);
+        color: var(--rose-800);
+        font-size: 0.875rem;
+      }
+
+      .csv-schema-note {
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+
+      .csv-schema-note code {
+        color: #334155;
+        word-break: break-all;
+      }
+
+      .table-wrap {
+        margin-top: 1rem;
+        overflow-x: auto;
+        border-top: 1px solid var(--border-default);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      thead tr {
+        border-bottom: 1px solid var(--border-default);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      th, td {
+        padding: 0.625rem 0.5rem;
+        white-space: nowrap;
+      }
+
+      th:first-child, td:first-child { padding-left: 0; }
+      th:last-child, td:last-child { padding-right: 0; }
+
+      .text-right { text-align: right; }
+
+      tbody tr {
+        border-bottom: 1px solid var(--bg-subtle);
+        font-size: 0.75rem;
+        cursor: pointer;
+      }
+
+      tbody tr:hover {
+        background: var(--bg-page);
+      }
+
+      tbody tr.is-current-row {
+        background: rgba(241, 245, 249, 0.8);
+      }
+
+      .row-hour-btn {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.25rem;
+        padding: 0;
+        border: none;
+        background: transparent;
+        font-weight: 600;
+        color: var(--text-primary);
+        cursor: pointer;
+      }
+
+      .row-hour-btn:hover {
+        color: var(--emerald-700);
+      }
+
+      .txt-good { color: var(--emerald-700); font-weight: 600; }
+      .txt-moderate { color: var(--amber-700); font-weight: 600; }
+      .txt-bad { color: var(--rose-700); font-weight: 600; }
+
+      /* Mobile Bottom Tab Bar */
+      .bottom-tabs {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-top: 1px solid var(--border-default);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      .bottom-tabs-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 32rem;
+        margin: 0 auto;
+      }
+
+      .bottom-tab-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        min-height: 3.5rem;
+        padding: 0.5rem 0.25rem;
+        border: none;
+        background: transparent;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+
+      .bottom-tab-btn.is-active {
+        color: var(--emerald-700);
+        font-weight: 600;
+      }
+
+      /* Footer */
+      .site-footer {
+        display: none;
+        max-width: 72rem;
+        margin: 2.5rem auto 0;
+        padding: 1.5rem 1.5rem 0;
+        border-top: 1px solid var(--border-default);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      /* Mobile Tab Visibility */
+      .tab-hidden-mobile {
+        display: none;
+      }
+
+      .sm-only-inline {
+        display: none;
+      }
+
+      @media (min-width: 640px) {
+        .sm-only-inline { display: inline; }
+        .card { padding: 1.25rem; }
+        .status-banner { padding: 1.25rem; }
+        .verdict-title { font-size: 1.5rem; }
+        .kpi-num { font-size: 1.25rem; }
+        .chart-bars { height: 13rem; gap: 6px; }
+        .appliance-list { grid-template-columns: 1fr 1fr; }
+        .savings-big { font-size: 1.875rem; }
+        .savings-sub { font-size: 0.875rem; }
+        tbody tr { font-size: 0.875rem; }
+        th, td { padding: 0.625rem 0.75rem; }
+      }
+
+      @media (min-width: 768px) {
+        .topbar-inner { padding: 0 1.5rem; height: 4rem; }
+        .desktop-nav { display: flex; }
+        .container { padding: 1.75rem 1.5rem 0; }
+        .card { padding: 1.5rem; }
+        .status-banner { padding: 1.5rem; }
+        .chart-header {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .csv-header {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        body { padding-bottom: 3rem; }
+        .top-grid {
+          grid-template-columns: repeat(12, minmax(0, 1fr));
+          gap: 1.5rem;
+        }
+        .col-overview { grid-column: span 7 / span 7; }
+        .col-appliances { grid-column: span 5 / span 5; }
+        .appliance-list { grid-template-columns: 1fr; }
+        .tab-hidden-mobile { display: flex; }
+        .col-appliances.tab-hidden-mobile,
+        .col-data.tab-hidden-mobile { display: block; }
+        .mobile-quick-jump { display: none; }
+        .bottom-tabs { display: none; }
+        .site-footer { display: flex; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <input
+      id="csv-file-upload"
+      type="file"
+      accept=".csv,text/csv"
+      class="sr-only"
+      aria-hidden="true"
+      tabindex="-1"
+    />
+
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a href="#overview" class="brand-link" data-nav="overview">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+            </svg>
+          </div>
+          <span class="brand-text">친환경 전기 알리미</span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="주요 섹션 이동">
+          <a href="#overview" data-nav="overview">오늘 현황</a>
+          <a href="#appliances" data-nav="appliances">가전 추천</a>
+          <a href="#data" data-nav="data">시간별 데이터</a>
+        </nav>
+
+        <button id="top-csv-btn" type="button" class="btn-csv-top">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" x2="12" y1="3" y2="15" />
+          </svg>
+          <span>CSV 교체</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="top-grid">
+        <!-- Overview + 24h Chart -->
+        <div id="overview" class="col-overview">
+          <section id="status-banner" class="status-banner grade-moderate" aria-live="polite">
+            <div class="banner-meta-row">
+              <div class="banner-meta">
+                <svg class="nowrap" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span id="status-time-kind" class="nowrap">현재 시각</span>
+                <span aria-hidden="true" class="nowrap">·</span>
+                <span id="status-time-label" class="mono-tabular nowrap" style="font-weight:600;color:#0f172a;">00:00</span>
+                <span aria-hidden="true" class="nowrap">·</span>
+                <span id="status-source-label" class="source-label">기본 내장 CSV</span>
+              </div>
+
+              <div class="hour-controls">
+                <label for="current-hour-select" class="sr-only">기준 시각 선택</label>
+                <select id="current-hour-select" class="hour-select mono-tabular" aria-label="기준 시각 선택"></select>
+                <button id="reset-hour-btn" type="button" class="btn-reset-hour" style="display:none;">
+                  현재 시각으로
+                </button>
+              </div>
+            </div>
+
+            <div class="verdict-row">
+              <div id="verdict-icon" class="verdict-icon" aria-hidden="true"></div>
+              <div style="min-width:0;">
+                <h1 id="verdict-headline" class="verdict-title">지금 전기를 쓰면 보통</h1>
+                <p id="verdict-subcopy" class="verdict-desc"></p>
+              </div>
+            </div>
+
+            <dl class="kpi-grid">
+              <div>
+                <dt class="kpi-label">탄소배출계수</dt>
+                <dd class="kpi-val">
+                  <span id="kpi-carbon" class="kpi-num mono-tabular">0</span>
+                  <span class="kpi-unit">g/kWh</span>
+                </dd>
+              </div>
+              <div>
+                <dt class="kpi-label">신재생 비중</dt>
+                <dd class="kpi-val">
+                  <span id="kpi-renewable" class="kpi-num mono-tabular">0</span>
+                  <span class="kpi-unit">%</span>
+                </dd>
+              </div>
+              <div>
+                <dt class="kpi-label">전기요금</dt>
+                <dd class="kpi-val">
+                  <span id="kpi-tariff" class="kpi-num mono-tabular">0</span>
+                  <span class="kpi-unit">원/kWh</span>
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="card" aria-labelledby="chart-heading">
+            <div class="chart-header">
+              <div>
+                <h2 id="chart-heading" class="section-title">24시간 탄소배출 추이</h2>
+                <p class="section-sub">막대를 눌러 시간대별 탄소배출·신재생 비중·요금을 확인하세요 (낮을수록 친환경)</p>
+              </div>
+              <div class="legend-list" aria-label="탄소배출 등급 기준">
+                <span class="legend-item">
+                  <span class="swatch swatch-good" aria-hidden="true"></span>
+                  <span id="legend-good">좋음 ≤311g</span>
+                </span>
+                <span class="legend-item">
+                  <span class="swatch swatch-moderate" aria-hidden="true"></span>
+                  <span id="legend-moderate">보통 ≤444g</span>
+                </span>
+                <span class="legend-item">
+                  <span class="swatch swatch-bad" aria-hidden="true"></span>
+                  <span id="legend-bad">나쁨 &gt;444g</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="rec-indicator-note">
+              <span class="rec-bar-pill" aria-hidden="true"></span>
+              <span id="chart-rec-label">추천 표시 구간</span>
+            </div>
+
+            <div id="chart-bars" class="chart-bars" role="group" aria-label="0시부터 23시까지 시간대별 탄소배출 막대그래프"></div>
+
+            <div class="chart-detail-strip">
+              <div class="detail-left">
+                <span id="detail-hour" class="detail-hour mono-tabular">00:00</span>
+                <span aria-hidden="true" style="color:#cbd5e1;">·</span>
+                <span id="detail-grade">보통</span>
+                <span id="detail-tag-sep" aria-hidden="true" style="color:#cbd5e1;display:none;">·</span>
+                <span id="detail-tag" style="color:#475569;font-weight:500;display:none;"></span>
+              </div>
+              <div class="detail-right">
+                <span>탄소 <strong id="detail-carbon" class="mono-tabular">0g</strong>/kWh</span>
+                <span>신재생 <strong id="detail-renewable" class="mono-tabular">0%</strong></span>
+                <span>요금 <strong id="detail-tariff" class="mono-tabular">0원</strong>/kWh</span>
+              </div>
+            </div>
+          </section>
+
+          <div class="mobile-quick-jump">
+            <div style="min-width:0;">
+              <div id="quick-jump-name" style="font-size:0.75rem;color:#64748b;">세탁기 추천 시간</div>
+              <div id="quick-jump-range" class="mono-tabular" style="font-size:0.875rem;font-weight:700;color:#0f172a;">12:00 ~ 13:00</div>
+            </div>
+            <button id="quick-jump-btn" type="button" class="btn-dark" style="font-size:0.75rem;">
+              <span>가전 추천 보기</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Appliance Recommender -->
+        <div id="appliances-col" class="col-appliances tab-hidden-mobile">
+          <section id="appliances" class="card" aria-labelledby="appliance-heading">
+            <div>
+              <h2 id="appliance-heading" class="section-title" style="font-size:1.125rem;">가전별 최적 사용 시간 추천</h2>
+              <p class="section-sub">가전과 원래 쓰던 시간을 고르면 연속 사용 평균 배출계수가 가장 낮은 시간대를 찾아드려요</p>
+            </div>
+
+            <div id="appliance-list" class="appliance-list" role="radiogroup" aria-label="가전제품 선택"></div>
+
+            <div class="usual-hour-row">
+              <label for="usual-hour-select" class="usual-hour-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span>원래 쓰던 시간</span>
+              </label>
+              <select id="usual-hour-select" class="usual-hour-select mono-tabular" aria-label="원래 쓰던 시간"></select>
+            </div>
+
+            <div class="rec-summary" data-testid="appliance-recommendation-summary">
+              <div class="rec-meta-line">
+                <span id="rec-appliance-title" style="font-size:0.75rem;font-weight:600;color:#047857;">세탁기 친환경 추천 시간</span>
+                <span id="rec-energy-spec" class="mono-tabular" style="font-size:0.75rem;color:#64748b;">연속 1시간 · 총 0.5kWh</span>
+              </div>
+
+              <div class="rec-range-row">
+                <div id="rec-best-range" class="rec-range-big mono-tabular">12:00 ~ 13:00</div>
+                <div style="font-size:0.75rem;font-weight:500;color:#475569;">
+                  평균 <span id="rec-best-avg">185</span>g/kWh · <span id="rec-best-grade" class="txt-good">좋음</span>
+                </div>
+              </div>
+
+              <p id="rec-shift-sentence" style="margin:0.5rem 0 0;font-size:0.875rem;color:#334155;line-height:1.55;"></p>
+
+              <div class="savings-box" data-testid="savings-highlight">
+                <div class="savings-grid">
+                  <div class="savings-col-left">
+                    <div class="savings-label">1회 이동 절감</div>
+                    <div id="save-once-carbon" class="savings-big mono-tabular">0g</div>
+                    <div id="save-once-cost" class="savings-sub mono-tabular">요금 0원 (동일)</div>
+                  </div>
+                  <div class="savings-col-right">
+                    <div class="savings-label">한 달(30회) 절감</div>
+                    <div id="save-month-carbon" class="savings-big mono-tabular">0g</div>
+                    <div id="save-month-cost" class="savings-sub mono-tabular">요금 0원 (동일)</div>
+                  </div>
+                </div>
+
+                <button id="formula-toggle-btn" type="button" class="btn-formula-toggle" aria-expanded="false">
+                  <span>계산 방법 보기</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                <div id="formula-panel" class="formula-panel" data-testid="savings-formula-panel" style="display:none;">
+                  <div>
+                    <div style="font-weight:600;color:#0f172a;">탄소 절감량 계산식</div>
+                    <div style="color:#475569;">소비전력(kW) × 사용시간(h) × (원래 평균 배출계수 − 추천 평균 배출계수)</div>
+                    <div id="formula-carbon-once" class="mono-tabular" style="color:#0f172a;margin-top:0.125rem;"></div>
+                    <div id="formula-carbon-month" class="mono-tabular" style="color:#334155;"></div>
+                  </div>
+                  <div class="formula-divider">
+                    <div style="font-weight:600;color:#0f172a;">전기요금 절감 계산식</div>
+                    <div style="color:#475569;">소비전력(kW) × 사용시간(h) × (원래 평균 요금 − 추천 평균 요금)</div>
+                    <div id="formula-cost-once" class="mono-tabular" style="color:#0f172a;margin-top:0.125rem;"></div>
+                    <div id="formula-cost-month" class="mono-tabular" style="color:#334155;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="compare-grid">
+                <div class="compare-left">
+                  <div id="cmp-usual-range" class="mono-tabular" style="font-size:0.75rem;color:#64748b;">원래 (19:00 ~ 20:00)</div>
+                  <div id="cmp-usual-avg" class="mono-tabular" style="margin-top:0.25rem;font-size:1rem;font-weight:700;color:#0f172a;">평균 545g/kWh</div>
+                  <div id="cmp-usual-total" class="mono-tabular" style="font-size:0.75rem;color:#475569;">총 273g · 119원</div>
+                </div>
+                <div class="compare-right">
+                  <div id="cmp-best-range" class="mono-tabular" style="font-size:0.75rem;color:#047857;font-weight:500;">추천 (12:00 ~ 13:00)</div>
+                  <div id="cmp-best-avg" class="mono-tabular" style="margin-top:0.25rem;font-size:1rem;font-weight:700;color:#047857;">평균 185g/kWh</div>
+                  <div id="cmp-best-total" class="mono-tabular" style="font-size:0.75rem;color:#475569;">총 93g · 83원</div>
+                </div>
+              </div>
+
+              <div class="top3-wrap">
+                <div style="font-size:0.75rem;font-weight:600;color:#334155;margin-bottom:0.375rem;">평균 배출계수 최저 Top 3</div>
+                <div id="top3-list" class="top3-list"></div>
+              </div>
+
+              <button id="inspect-chart-btn" type="button" class="btn-dark" style="width:100%;margin-top:1rem;">
+                <span>24시간 그래프에서 추천 구간 보기</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- 24h Table & CSV Management -->
+      <div id="data-col" class="col-data tab-hidden-mobile">
+        <section id="data" class="card" aria-labelledby="data-section-heading">
+          <div class="csv-header">
+            <div>
+              <h2 id="data-section-heading" class="section-title" style="font-size:1.125rem;">시간대별 전력 데이터 &amp; CSV 관리</h2>
+              <p class="section-sub" style="margin-top:0.25rem;color:#475569;line-height:1.5;">
+                현재 적용 중: <strong id="data-source-strong" style="color:#1e293b;">기본 내장 CSV</strong> · 아래 버튼으로 새 CSV 파일을 업로드하거나, 다운로드해 수정 후 다시 불러올 수 있습니다.
+              </p>
+            </div>
+            <div class="csv-actions">
+              <button id="upload-csv-btn" type="button" class="btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" x2="12" y1="3" y2="15" />
+                </svg>
+                <span>CSV 파일 업로드</span>
+              </button>
+              <button id="download-csv-btn" type="button" class="btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" x2="12" y1="15" y2="3" />
+                </svg>
+                <span>CSV 다운로드</span>
+              </button>
+              <button id="reset-csv-btn" type="button" class="btn-secondary" style="display:none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                </svg>
+                <span>기본 CSV 복원</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="csv-error-alert" role="alert" class="csv-alert" style="display:none;"></div>
+
+          <div class="csv-schema-note">
+            CSV 열 형식:
+            <code class="mono-tabular" style="background:#f1f5f9;padding:2px 6px;border-radius:4px;">hour,carbon_g_per_kwh,renewable_pct,tariff_krw_per_kwh</code>
+            (0~23시 총 24행)
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">시간</th>
+                  <th scope="col">등급</th>
+                  <th scope="col" class="text-right">탄소<span class="sm-only-inline">배출 (g/kWh)</span></th>
+                  <th scope="col" class="text-right">신재생<span class="sm-only-inline"> (%)</span></th>
+                  <th scope="col" class="text-right">요금<span class="sm-only-inline"> (원/kWh)</span></th>
+                </tr>
+              </thead>
+              <tbody id="hourly-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <span>시간대별 친환경 전기 사용 알리미</span>
+      <span>단일 HTML 버전 · 브라우저 직접 실행 및 Vercel 즉시 배포 지원</span>
+    </footer>
+
+    <nav class="bottom-tabs" aria-label="모바일 하단 메뉴">
+      <div class="bottom-tabs-grid">
+        <button type="button" class="bottom-tab-btn is-active" data-tab="overview">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 3v18h18" />
+            <path d="M18 17V9" />
+            <path d="M13 17V5" />
+            <path d="M8 17v-3" />
+          </svg>
+          <span>오늘 현황</span>
+        </button>
+        <button type="button" class="bottom-tab-btn" data-tab="appliances">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="16" height="20" x="4" y="2" rx="2" />
+            <path d="M12 6h.01" />
+            <circle cx="12" cy="14" r="4" />
+            <path d="M12 14v.01" />
+          </svg>
+          <span>가전 추천</span>
+        </button>
+        <button type="button" class="bottom-tab-btn" data-tab="data">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+            <path d="M3 12A9 3 0 0 0 21 12" />
+          </svg>
+          <span>데이터·CSV</span>
+        </button>
+      </div>
+    </nav>
+
+    <script>
+      (function () {
+        'use strict';
+
+        // === 기본 24시간 전력 CSV 데이터 (이 문자열을 수정하거나 UI에서 CSV를 업로드해 교체할 수 있습니다) ===
+        var DEFAULT_ELECTRICITY_CSV = [
+          'hour,carbon_g_per_kwh,renewable_pct,tariff_krw_per_kwh',
+          '0,405,5.4,102',
+          '1,412,4.9,98',
+          '2,420,4.5,95',
+          '3,425,4.3,94',
+          '4,418,4.7,96',
+          '5,402,5.6,105',
+          '6,385,8.2,128',
+          '7,362,12.1,148',
+          '8,335,17.8,162',
+          '9,288,25.4,168',
+          '10,235,33.2,172',
+          '11,200,39.1,176',
+          '12,185,42.6,165',
+          '13,190,41.8,178',
+          '14,210,38.0,182',
+          '15,255,30.8,180',
+          '16,325,21.4,174',
+          '17,465,11.2,195',
+          '18,515,6.3,228',
+          '19,545,4.1,238',
+          '20,530,4.4,232',
+          '21,485,5.0,205',
+          '22,420,5.3,142',
+          '23,402,5.4,115',
+        ].join('\n');
+
+        var APPLIANCES = [
+          { id: 'washer', name: '세탁기', powerKw: 0.5, durationHours: 1, durationLabel: '1시간' },
+          { id: 'dryer', name: '건조기', powerKw: 2.5, durationHours: 1, durationLabel: '1시간' },
+          { id: 'dishwasher', name: '식기세척기', powerKw: 1.2, durationHours: 1.5, durationLabel: '1시간 30분' },
+          { id: 'ev-charger', name: '전기차 충전', powerKw: 7, durationHours: 4, durationLabel: '4시간' },
+          { id: 'robot-vacuum', name: '로봇청소기', powerKw: 0.05, durationHours: 1, durationLabel: '1시간' },
+        ];
+
+        var APPLIANCE_SVG = {
+          washer:
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>',
+          dryer:
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>',
+          dishwasher:
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
+          'ev-charger':
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>',
+          'robot-vacuum':
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/></svg>',
+        };
+
+        var VERDICT_ICONS = {
+          good: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+          moderate: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>',
+          bad: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+        };
+
+        var STORAGE_CSV_KEY = 'eco_electricity_custom_csv_v1';
+        var STORAGE_NAME_KEY = 'eco_electricity_custom_name_v1';
+
+        function safeStorageGet(key) {
+          try {
+            return window.localStorage.getItem(key);
+          } catch (e) {
+            return null;
+          }
+        }
+
+        function safeStorageSet(key, value) {
+          try {
+            window.localStorage.setItem(key, value);
+          } catch (e) {
+            // Ignore file:// storage restrictions
+          }
+        }
+
+        function safeStorageRemove(key) {
+          try {
+            window.localStorage.removeItem(key);
+          } catch (e) {
+            // Ignore file:// storage restrictions
+          }
+        }
+
+        function splitCsvLine(line) {
+          var cells = [];
+          var current = '';
+          var inQuotes = false;
+          for (var i = 0; i < line.length; i++) {
+            var ch = line[i];
+            if (ch === '"') {
+              if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i++;
+              } else {
+                inQuotes = !inQuotes;
+              }
+            } else if (ch === ',' && !inQuotes) {
+              cells.push(current.trim());
+              current = '';
+            } else {
+              current += ch;
+            }
+          }
+          cells.push(current.trim());
+          return cells;
+        }
+
+        function parseStrictNumber(raw) {
+          var cleaned = raw.replace(/^["']|["']$/g, '').trim();
+          if (cleaned === '') return NaN;
+          var normalized = cleaned.replace(/[%,원\s]/g, '');
+          if (normalized === '') return NaN;
+          var num = Number(normalized);
+          return Number.isFinite(num) ? num : NaN;
+        }
+
+        function parseHourCell(raw) {
+          var cleaned = raw.replace(/^["']|["']$/g, '').trim();
+          if (cleaned === '') return NaN;
+          if (/^\d{1,2}:00$/.test(cleaned)) {
+            return Number(cleaned.split(':')[0]);
+          }
+          var normalized = cleaned.replace(/시$/g, '').trim();
+          if (!/^-?\d+$/.test(normalized)) return NaN;
+          return Number(normalized);
+        }
+
+        function parseElectricityCsv(csvText) {
+          var normalized = csvText.replace(/^\uFEFF/, '').trim();
+          if (!normalized) {
+            return { ok: false, error: 'CSV 내용이 비어 있습니다.' };
+          }
+
+          var rawLines = normalized
+            .split(/\r?\n/)
+            .map(function (l) { return l.trim(); })
+            .filter(function (l) { return l.length > 0 && l.charAt(0) !== '#'; });
+
+          if (rawLines.length < 2) {
+            return { ok: false, error: '헤더와 0~23시 데이터 행이 필요합니다.' };
+          }
+
+          var headerCells = splitCsvLine(rawLines[0]).map(function (c) {
+            return c.trim().toLowerCase();
+          });
+
+          function findCol(candidates) {
+            for (var i = 0; i < headerCells.length; i++) {
+              for (var j = 0; j < candidates.length; j++) {
+                if (headerCells[i].indexOf(candidates[j]) !== -1) return i;
+              }
+            }
+            return -1;
+          }
+
+          var hourIdx = findCol(['hour', '시간', '시각']);
+          var carbonIdx = findCol(['carbon', 'co2', '탄소', '배출']);
+          var renewableIdx = findCol(['renewable', '신재생', '재생']);
+          var tariffIdx = findCol(['tariff', 'price', 'krw', '요금']);
+
+          var hasHeader =
+            hourIdx !== -1 || carbonIdx !== -1 || renewableIdx !== -1 || tariffIdx !== -1;
+
+          var colMap = {
+            hour: hourIdx !== -1 ? hourIdx : 0,
+            carbon: carbonIdx !== -1 ? carbonIdx : 1,
+            renewable: renewableIdx !== -1 ? renewableIdx : 2,
+            tariff: tariffIdx !== -1 ? tariffIdx : 3,
+          };
+
+          var dataLines = hasHeader ? rawLines.slice(1) : rawLines;
+          if (dataLines.length !== 24) {
+            return {
+              ok: false,
+              error: '0~23시까지 총 24개 시간대 데이터가 필요합니다. (현재 ' + dataLines.length + '줄)',
+            };
+          }
+
+          var records = [];
+          var seenHours = {};
+
+          for (var idx = 0; idx < dataLines.length; idx++) {
+            var cells = splitCsvLine(dataLines[idx]);
+            if (cells.length < 4) {
+              return {
+                ok: false,
+                error: (idx + 1) + '번째 데이터 행의 열 개수가 부족합니다. (4개 열 필요)',
+              };
+            }
+
+            var hour = parseHourCell(cells[colMap.hour]);
+            var carbon = parseStrictNumber(cells[colMap.carbon]);
+            var renewable = parseStrictNumber(cells[colMap.renewable]);
+            var tariff = parseStrictNumber(cells[colMap.tariff]);
+
+            if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
+              return {
+                ok: false,
+                error: (idx + 1) + '번째 행의 시간(' + cells[colMap.hour] + ')은 0~23 사이 정수여야 합니다.',
+              };
+            }
+            if (seenHours[hour]) {
+              return {
+                ok: false,
+                error: hour + '시 데이터가 중복되어 있습니다.',
+              };
+            }
+            if (!Number.isFinite(carbon) || carbon < 0) {
+              return {
+                ok: false,
+                error: hour + '시의 탄소배출계수 값이 올바르지 않습니다.',
+              };
+            }
+            if (!Number.isFinite(renewable) || renewable < 0 || renewable > 100) {
+              return {
+                ok: false,
+                error: hour + '시의 신재생 비율은 0~100 사이여야 합니다.',
+              };
+            }
+            if (!Number.isFinite(tariff) || tariff < 0) {
+              return {
+                ok: false,
+                error: hour + '시의 전기요금 값이 올바르지 않습니다.',
+              };
+            }
+
+            seenHours[hour] = true;
+            records.push({
+              hour: hour,
+              carbonGPerKwh: carbon,
+              renewablePct: renewable,
+              tariffKrwPerKwh: tariff,
+            });
+          }
+
+          records.sort(function (a, b) { return a.hour - b.hour; });
+          return { ok: true, data: records };
+        }
+
+        function serializeElectricityCsv(records) {
+          var header = 'hour,carbon_g_per_kwh,renewable_pct,tariff_krw_per_kwh';
+          var rows = records.slice().sort(function (a, b) { return a.hour - b.hour; }).map(function (r) {
+            return r.hour + ',' + r.carbonGPerKwh + ',' + r.renewablePct + ',' + r.tariffKrwPerKwh;
+          });
+          return [header].concat(rows).join('\n') + '\n';
+        }
+
+        function computeCarbonThresholds(records) {
+          if (!records.length) {
+            return { goodMax: 300, moderateMax: 450, min: 0, max: 600 };
+          }
+          var min = records[0].carbonGPerKwh;
+          var max = records[0].carbonGPerKwh;
+          for (var i = 1; i < records.length; i++) {
+            if (records[i].carbonGPerKwh < min) min = records[i].carbonGPerKwh;
+            if (records[i].carbonGPerKwh > max) max = records[i].carbonGPerKwh;
+          }
+          var span = max - min;
+          if (span < 30) {
+            return { goodMax: 300, moderateMax: 450, min: min, max: max };
+          }
+          return {
+            goodMax: Math.round(min + span * 0.35),
+            moderateMax: Math.round(min + span * 0.72),
+            min: min,
+            max: max,
+          };
+        }
+
+        function getCarbonGrade(carbonGPerKwh, thresholds) {
+          if (carbonGPerKwh <= thresholds.goodMax) return 'good';
+          if (carbonGPerKwh <= thresholds.moderateMax) return 'moderate';
+          return 'bad';
+        }
+
+        function getGradeLabel(grade) {
+          if (grade === 'good') return '좋음';
+          if (grade === 'moderate') return '보통';
+          return '나쁨';
+        }
+
+        function pad2(n) {
+          return String(n).padStart(2, '0');
+        }
+
+        function formatHourLabel(hour) {
+          return pad2(((hour % 24) + 24) % 24) + ':00';
+        }
+
+        function formatWindowRange(startHour, durationHours) {
+          var totalStartMinutes = Math.round(startHour * 60);
+          var totalEndMinutes = (totalStartMinutes + Math.round(durationHours * 60)) % (24 * 60);
+          var endH = Math.floor(totalEndMinutes / 60);
+          var endM = totalEndMinutes % 60;
+          return formatHourLabel(startHour) + ' ~ ' + pad2(endH) + ':' + pad2(endM);
+        }
+
+        function formatCarbonAmount(grams) {
+          var abs = Math.abs(grams);
+          if (abs >= 1000) {
+            return (grams / 1000).toFixed(2) + 'kg';
+          }
+          return Math.round(grams).toLocaleString('ko-KR') + 'g';
+        }
+
+        function formatKrw(krw) {
+          return Math.round(krw).toLocaleString('ko-KR') + '원';
+        }
+
+        function formatSignedKrw(amount) {
+          var rounded = Math.round(amount);
+          if (rounded > 0) return rounded.toLocaleString('ko-KR') + '원 절감';
+          if (rounded < 0) return Math.abs(rounded).toLocaleString('ko-KR') + '원 추가';
+          return '0원 (동일)';
+        }
+
+        function formatFormulaNumber(value) {
+          var rounded = Math.round(value * 100) / 100;
+          return rounded.toLocaleString('ko-KR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+          });
+        }
+
+        function formatFormulaKrw(amount) {
+          var rounded = Math.round(amount * 10) / 10;
+          var formatted = Math.abs(rounded).toLocaleString('ko-KR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 1,
+          });
+          return rounded < 0 ? '-' + formatted + '원' : formatted + '원';
+        }
+
+        function getCurrentStatusCopy(record, grade, bestHourRecord) {
+          var carbon = Math.round(record.carbonGPerKwh);
+          var renewable = record.renewablePct.toFixed(1);
+          if (grade === 'good') {
+            return {
+              headline: '지금 전기를 쓰면 좋음',
+              subcopy:
+                '태양광 등 신재생 비중이 ' + renewable + '%로 높아 탄소배출(' + carbon + 'g/kWh)이 적은 친환경 시간대예요.',
+            };
+          }
+          if (grade === 'moderate') {
+            return {
+              headline: '지금 전기를 쓰면 보통',
+              subcopy:
+                '무난한 전력 상태지만, 가장 깨끗한 ' +
+                formatHourLabel(bestHourRecord.hour) +
+                '(' +
+                Math.round(bestHourRecord.carbonGPerKwh) +
+                'g/kWh)에 가전을 돌리면 탄소를 더 줄일 수 있어요.',
+            };
+          }
+          return {
+            headline: '지금 전기를 쓰면 나쁨',
+            subcopy:
+              '화력발전 의존도가 높아 탄소배출(' +
+              carbon +
+              'g/kWh)이 많은 시간대입니다. 가전 사용은 ' +
+              formatHourLabel(bestHourRecord.hour) +
+              ' 전후로 미루는 편이 좋아요.',
+          };
+        }
+
+        function evaluateApplianceWindow(records, appliance, startHour, thresholds) {
+          var map = {};
+          for (var i = 0; i < records.length; i++) {
+            map[records[i].hour] = records[i];
+          }
+          var totalKwh = Math.round(appliance.powerKw * appliance.durationHours * 1000) / 1000;
+          var remaining = appliance.durationHours;
+          var offset = 0;
+          var weightedCarbon = 0;
+          var weightedTariff = 0;
+          var weightedRenewable = 0;
+          var coveredHours = [];
+
+          while (remaining > 1e-6) {
+            var hour = (startHour + offset) % 24;
+            var weight = Math.min(1, remaining);
+            var rec = map[hour] || records[0];
+            weightedCarbon += rec.carbonGPerKwh * weight;
+            weightedTariff += rec.tariffKrwPerKwh * weight;
+            weightedRenewable += rec.renewablePct * weight;
+            coveredHours.push(hour);
+            remaining -= weight;
+            offset += 1;
+          }
+
+          var avgCarbonGPerKwh = weightedCarbon / appliance.durationHours;
+          var avgTariffKrwPerKwh = weightedTariff / appliance.durationHours;
+          var avgRenewablePct = weightedRenewable / appliance.durationHours;
+          var totalCarbonG = totalKwh * avgCarbonGPerKwh;
+          var totalCostKrw = totalKwh * avgTariffKrwPerKwh;
+
+          return {
+            startHour: startHour,
+            rangeLabel: formatWindowRange(startHour, appliance.durationHours),
+            coveredHours: coveredHours,
+            totalKwh: totalKwh,
+            totalCarbonG: totalCarbonG,
+            totalCostKrw: totalCostKrw,
+            avgCarbonGPerKwh: avgCarbonGPerKwh,
+            avgTariffKrwPerKwh: avgTariffKrwPerKwh,
+            avgRenewablePct: avgRenewablePct,
+            grade: getCarbonGrade(avgCarbonGPerKwh, thresholds),
+          };
+        }
+
+        function recommendAppliance(records, appliance, usualStartHour, thresholds) {
+          var windows = [];
+          for (var h = 0; h < 24; h++) {
+            windows.push(evaluateApplianceWindow(records, appliance, h, thresholds));
+          }
+          var sortedByCarbon = windows.slice().sort(function (a, b) {
+            return a.avgCarbonGPerKwh - b.avgCarbonGPerKwh || a.totalCostKrw - b.totalCostKrw;
+          });
+          var bestCarbonWindow = sortedByCarbon[0];
+          var usualWindow = windows[usualStartHour] || bestCarbonWindow;
+          var totalKwh = bestCarbonWindow.totalKwh;
+
+          var carbonSavedOnceG =
+            totalKwh * (usualWindow.avgCarbonGPerKwh - bestCarbonWindow.avgCarbonGPerKwh);
+          var carbonSavedMonthlyG = carbonSavedOnceG * 30;
+          var carbonSavedPct =
+            usualWindow.avgCarbonGPerKwh > 0
+              ? (carbonSavedOnceG / (totalKwh * usualWindow.avgCarbonGPerKwh)) * 100
+              : 0;
+          var costSavedOnceKrw =
+            totalKwh * (usualWindow.avgTariffKrwPerKwh - bestCarbonWindow.avgTariffKrwPerKwh);
+          var costSavedMonthlyKrw = costSavedOnceKrw * 30;
+
+          return {
+            appliance: appliance,
+            bestCarbonWindow: bestCarbonWindow,
+            usualWindow: usualWindow,
+            carbonSavedOnceG: carbonSavedOnceG,
+            carbonSavedMonthlyG: carbonSavedMonthlyG,
+            carbonSavedPct: carbonSavedPct,
+            costSavedOnceKrw: costSavedOnceKrw,
+            costSavedMonthlyKrw: costSavedMonthlyKrw,
+            topWindows: sortedByCarbon.slice(0, 3),
+          };
+        }
+
+        // === App State ===
+        var realCurrentHour = new Date().getHours();
+        var initialCsv = safeStorageGet(STORAGE_CSV_KEY);
+        var initialParsed = initialCsv ? parseElectricityCsv(initialCsv) : null;
+        var defaultParsed = parseElectricityCsv(DEFAULT_ELECTRICITY_CSV);
+
+        var state = {
+          data: initialParsed && initialParsed.ok ? initialParsed.data : defaultParsed.data,
+          isCustomCsv: Boolean(initialParsed && initialParsed.ok),
+          dataSourceLabel:
+            initialParsed && initialParsed.ok
+              ? safeStorageGet(STORAGE_NAME_KEY) || '사용자 업로드 CSV'
+              : '기본 내장 CSV',
+          csvError: null,
+          realCurrentHour: realCurrentHour,
+          currentHour: realCurrentHour,
+          selectedHour: realCurrentHour,
+          usualStartHour: 19,
+          selectedApplianceId: APPLIANCES[0].id,
+          activeTab: 'overview',
+          showFormula: false,
+        };
+
+        // === DOM Elements ===
+        var elFileInput = document.getElementById('csv-file-upload');
+        var elTopCsvBtn = document.getElementById('top-csv-btn');
+        var elCurrentHourSelect = document.getElementById('current-hour-select');
+        var elResetHourBtn = document.getElementById('reset-hour-btn');
+        var elUsualHourSelect = document.getElementById('usual-hour-select');
+        var elFormulaToggleBtn = document.getElementById('formula-toggle-btn');
+        var elFormulaPanel = document.getElementById('formula-panel');
+        var elQuickJumpBtn = document.getElementById('quick-jump-btn');
+        var elInspectChartBtn = document.getElementById('inspect-chart-btn');
+        var elUploadCsvBtn = document.getElementById('upload-csv-btn');
+        var elDownloadCsvBtn = document.getElementById('download-csv-btn');
+        var elResetCsvBtn = document.getElementById('reset-csv-btn');
+
+        function populateHourSelects() {
+          elCurrentHourSelect.innerHTML = '';
+          elUsualHourSelect.innerHTML = '';
+          for (var h = 0; h < 24; h++) {
+            var opt1 = document.createElement('option');
+            opt1.value = String(h);
+            opt1.textContent =
+              formatHourLabel(h) + (h === state.realCurrentHour ? ' (현재)' : '');
+            elCurrentHourSelect.appendChild(opt1);
+
+            var opt2 = document.createElement('option');
+            opt2.value = String(h);
+            opt2.textContent =
+              formatHourLabel(h) +
+              ' 시작' +
+              (h === state.currentHour ? ' (현재)' : '');
+            elUsualHourSelect.appendChild(opt2);
+          }
+          elCurrentHourSelect.value = String(state.currentHour);
+          elUsualHourSelect.value = String(state.usualStartHour);
+        }
+
+        function setTab(tab) {
+          state.activeTab = tab;
+          var appliancesCol = document.getElementById('appliances-col');
+          var dataCol = document.getElementById('data-col');
+          var overviewCol = document.getElementById('overview');
+
+          overviewCol.classList.toggle('tab-hidden-mobile', tab !== 'overview');
+          appliancesCol.classList.toggle('tab-hidden-mobile', tab !== 'appliances');
+          dataCol.classList.toggle('tab-hidden-mobile', tab !== 'data');
+
+          var tabBtns = document.querySelectorAll('.bottom-tab-btn');
+          for (var i = 0; i < tabBtns.length; i++) {
+            var isActive = tabBtns[i].getAttribute('data-tab') === tab;
+            tabBtns[i].classList.toggle('is-active', isActive);
+            if (isActive) {
+              tabBtns[i].setAttribute('aria-current', 'page');
+            } else {
+              tabBtns[i].removeAttribute('aria-current');
+            }
+          }
+        }
+
+        function navigateToSection(section) {
+          setTab(section);
+          if (window.innerWidth >= 1024) {
+            var target = document.getElementById(section);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+
+        function renderAll() {
+          var thresholds = computeCarbonThresholds(state.data);
+          var currentRecord =
+            state.data.find(function (d) { return d.hour === state.currentHour; }) || state.data[0];
+          var currentGrade = getCarbonGrade(currentRecord.carbonGPerKwh, thresholds);
+          var bestHourRecord = state.data
+            .slice()
+            .sort(function (a, b) { return a.carbonGPerKwh - b.carbonGPerKwh; })[0];
+
+          var selectedAppliance =
+            APPLIANCES.find(function (a) { return a.id === state.selectedApplianceId; }) ||
+            APPLIANCES[0];
+          var recommendation = recommendAppliance(
+            state.data,
+            selectedAppliance,
+            state.usualStartHour,
+            thresholds
+          );
+
+          // 1. Update select labels/values
+          populateHourSelects();
+          var isSimulated = state.currentHour !== state.realCurrentHour;
+          elResetHourBtn.style.display = isSimulated ? 'inline-block' : 'none';
+
+          // 2. Status Banner
+          var banner = document.getElementById('status-banner');
+          banner.className = 'status-banner grade-' + currentGrade;
+          document.getElementById('status-time-kind').textContent = isSimulated ? '선택 시각' : '현재 시각';
+          document.getElementById('status-time-label').textContent = formatHourLabel(state.currentHour);
+          document.getElementById('status-source-label').textContent = state.dataSourceLabel;
+          document.getElementById('verdict-icon').innerHTML = VERDICT_ICONS[currentGrade];
+          var copy = getCurrentStatusCopy(currentRecord, currentGrade, bestHourRecord);
+          document.getElementById('verdict-headline').textContent = copy.headline;
+          document.getElementById('verdict-subcopy').textContent = copy.subcopy;
+          document.getElementById('kpi-carbon').textContent = String(Math.round(currentRecord.carbonGPerKwh));
+          document.getElementById('kpi-renewable').textContent = currentRecord.renewablePct.toFixed(1);
+          document.getElementById('kpi-tariff').textContent = Math.round(currentRecord.tariffKrwPerKwh).toLocaleString('ko-KR');
+
+          // 3. 24h Bar Chart
+          document.getElementById('legend-good').textContent = '좋음 ≤' + thresholds.goodMax + 'g';
+          document.getElementById('legend-moderate').textContent = '보통 ≤' + thresholds.moderateMax + 'g';
+          document.getElementById('legend-bad').textContent = '나쁨 >' + thresholds.moderateMax + 'g';
+          document.getElementById('chart-rec-label').textContent =
+            '추천 표시 구간: ' +
+            selectedAppliance.name +
+            ' 최적 (' +
+            recommendation.bestCarbonWindow.rangeLabel +
+            ')';
+
+          var maxCarbon = Math.max.apply(
+            null,
+            state.data.map(function (d) { return d.carbonGPerKwh; }).concat([100])
+          );
+          var chartBars = document.getElementById('chart-bars');
+          chartBars.innerHTML = '';
+
+          var recHours = recommendation.bestCarbonWindow.coveredHours;
+          state.data.forEach(function (item) {
+            var grade = getCarbonGrade(item.carbonGPerKwh, thresholds);
+            var heightPct = Math.max(14, Math.round((item.carbonGPerKwh / maxCarbon) * 100));
+            var isCurrent = item.hour === state.currentHour;
+            var isSelected = item.hour === state.selectedHour;
+            var isRec = recHours.indexOf(item.hour) !== -1;
+
+            var col = document.createElement('div');
+            col.className = 'bar-col';
+
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'bar-btn bar-' + grade;
+            if (isSelected) btn.classList.add('is-selected');
+            else if (isCurrent) btn.classList.add('is-current');
+            else btn.classList.add('is-dimmed');
+            btn.style.height = heightPct + '%';
+            btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+            btn.setAttribute(
+              'aria-label',
+              item.hour +
+                '시, 탄소배출 ' +
+                Math.round(item.carbonGPerKwh) +
+                'g/kWh (' +
+                getGradeLabel(grade) +
+                '), 신재생 ' +
+                item.renewablePct.toFixed(1) +
+                '%, 요금 ' +
+                Math.round(item.tariffKrwPerKwh) +
+                '원' +
+                (isCurrent ? ', 현재 시각' : '') +
+                (isRec ? ', 추천 시간대' : '')
+            );
+
+            if (isRec) {
+              var dot = document.createElement('span');
+              dot.className = 'bar-rec-dot';
+              dot.setAttribute('aria-hidden', 'true');
+              btn.appendChild(dot);
+            }
+
+            btn.addEventListener('click', function () {
+              state.selectedHour = item.hour;
+              renderAll();
+            });
+
+            col.appendChild(btn);
+
+            if (item.hour % 3 === 0 || isCurrent) {
+              var tick = document.createElement('span');
+              tick.className = 'bar-tick mono-tabular' + (isCurrent ? ' is-current-tick' : '');
+              tick.textContent = String(item.hour);
+              col.appendChild(tick);
+            }
+
+            chartBars.appendChild(col);
+          });
+
+          // Chart selected detail strip
+          var activeRecord =
+            state.data.find(function (d) { return d.hour === state.selectedHour; }) || currentRecord;
+          var activeGrade = getCarbonGrade(activeRecord.carbonGPerKwh, thresholds);
+          var isActiveRec = recHours.indexOf(activeRecord.hour) !== -1;
+
+          document.getElementById('detail-hour').textContent = formatHourLabel(activeRecord.hour);
+          var detailGradeEl = document.getElementById('detail-grade');
+          detailGradeEl.textContent = getGradeLabel(activeGrade);
+          detailGradeEl.className = 'txt-' + activeGrade;
+
+          var tagSep = document.getElementById('detail-tag-sep');
+          var tagEl = document.getElementById('detail-tag');
+          if (activeRecord.hour === state.currentHour) {
+            tagSep.style.display = 'inline';
+            tagEl.style.display = 'inline';
+            tagEl.textContent = '기준 시각';
+            tagEl.style.color = '#475569';
+          } else if (isActiveRec) {
+            tagSep.style.display = 'inline';
+            tagEl.style.display = 'inline';
+            tagEl.textContent = '추천 시간';
+            tagEl.style.color = '#047857';
+          } else {
+            tagSep.style.display = 'none';
+            tagEl.style.display = 'none';
+          }
+
+          document.getElementById('detail-carbon').textContent = Math.round(activeRecord.carbonGPerKwh) + 'g';
+          document.getElementById('detail-renewable').textContent = activeRecord.renewablePct.toFixed(1) + '%';
+          document.getElementById('detail-tariff').textContent = Math.round(activeRecord.tariffKrwPerKwh).toLocaleString('ko-KR') + '원';
+
+          // Mobile Quick Jump
+          document.getElementById('quick-jump-name').textContent = selectedAppliance.name + ' 추천 시간';
+          document.getElementById('quick-jump-range').textContent = recommendation.bestCarbonWindow.rangeLabel;
+
+          // 4. Appliance Selector & Recommendation
+          var applianceList = document.getElementById('appliance-list');
+          applianceList.innerHTML = '';
+          APPLIANCES.forEach(function (item) {
+            var isSel = item.id === state.selectedApplianceId;
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'appliance-btn' + (isSel ? ' is-selected' : '');
+            btn.setAttribute('role', 'radio');
+            btn.setAttribute('aria-checked', isSel ? 'true' : 'false');
+
+            var left = document.createElement('div');
+            left.className = 'appliance-left';
+
+            var iconBox = document.createElement('div');
+            iconBox.className = 'appliance-icon';
+            iconBox.setAttribute('aria-hidden', 'true');
+            iconBox.innerHTML = APPLIANCE_SVG[item.id] || APPLIANCE_SVG.washer;
+
+            var textWrap = document.createElement('div');
+            textWrap.style.minWidth = '0';
+            var nameEl = document.createElement('div');
+            nameEl.className = 'appliance-name';
+            nameEl.textContent = item.name;
+            var specEl = document.createElement('div');
+            specEl.className = 'appliance-spec mono-tabular';
+            specEl.textContent = item.powerKw + 'kW · ' + item.durationLabel;
+            textWrap.appendChild(nameEl);
+            textWrap.appendChild(specEl);
+
+            left.appendChild(iconBox);
+            left.appendChild(textWrap);
+
+            var kwhEl = document.createElement('span');
+            kwhEl.className = 'appliance-kwh mono-tabular';
+            kwhEl.textContent = (Math.round(item.powerKw * item.durationHours * 100) / 100) + 'kWh';
+
+            btn.appendChild(left);
+            btn.appendChild(kwhEl);
+
+            btn.addEventListener('click', function () {
+              state.selectedApplianceId = item.id;
+              renderAll();
+            });
+
+            applianceList.appendChild(btn);
+          });
+
+          var best = recommendation.bestCarbonWindow;
+          var usual = recommendation.usualWindow;
+          var isAlreadyOptimal =
+            best.startHour === usual.startHour || recommendation.carbonSavedOnceG < 0.5;
+
+          document.getElementById('rec-appliance-title').textContent = selectedAppliance.name + ' 친환경 추천 시간';
+          document.getElementById('rec-energy-spec').textContent =
+            '연속 ' + selectedAppliance.durationLabel + ' · 총 ' + best.totalKwh + 'kWh';
+          document.getElementById('rec-best-range').textContent = best.rangeLabel;
+          document.getElementById('rec-best-avg').textContent = String(Math.round(best.avgCarbonGPerKwh));
+          var bestGradeEl = document.getElementById('rec-best-grade');
+          bestGradeEl.textContent = getGradeLabel(best.grade);
+          bestGradeEl.className = 'txt-' + best.grade;
+
+          var shiftEl = document.getElementById('rec-shift-sentence');
+          shiftEl.innerHTML = '';
+          if (isAlreadyOptimal) {
+            shiftEl.appendChild(document.createTextNode('원래 쓰시던 '));
+            var s0 = document.createElement('strong');
+            s0.className = 'mono-tabular';
+            s0.style.color = '#0f172a';
+            s0.textContent = usual.rangeLabel;
+            shiftEl.appendChild(s0);
+            shiftEl.appendChild(document.createTextNode('이 이미 가장 탄소배출이 적은 시간대예요.'));
+          } else {
+            shiftEl.appendChild(document.createTextNode('원래 시간(' + usual.rangeLabel + ')에서 '));
+            var s1 = document.createElement('strong');
+            s1.className = 'mono-tabular';
+            s1.style.color = '#0f172a';
+            s1.textContent = best.rangeLabel;
+            shiftEl.appendChild(s1);
+            shiftEl.appendChild(document.createTextNode('으로 옮기면 탄소배출을 '));
+            var s2 = document.createElement('strong');
+            s2.className = 'mono-tabular';
+            s2.style.color = '#047857';
+            s2.textContent = Math.round(recommendation.carbonSavedPct) + '%';
+            shiftEl.appendChild(s2);
+            shiftEl.appendChild(document.createTextNode(' 줄일 수 있어요.'));
+          }
+
+          document.getElementById('save-once-carbon').textContent = formatCarbonAmount(recommendation.carbonSavedOnceG);
+          document.getElementById('save-once-cost').textContent = '요금 ' + formatSignedKrw(recommendation.costSavedOnceKrw);
+          document.getElementById('save-month-carbon').textContent = formatCarbonAmount(recommendation.carbonSavedMonthlyG);
+          document.getElementById('save-month-cost').textContent = '요금 ' + formatSignedKrw(recommendation.costSavedMonthlyKrw);
+
+          // Formula Breakdown
+          elFormulaToggleBtn.setAttribute('aria-expanded', state.showFormula ? 'true' : 'false');
+          elFormulaPanel.style.display = state.showFormula ? 'flex' : 'none';
+
+          var fCarbonOnce = document.getElementById('formula-carbon-once');
+          fCarbonOnce.innerHTML = '';
+          fCarbonOnce.appendChild(
+            document.createTextNode(
+              selectedAppliance.powerKw +
+                'kW × ' +
+                selectedAppliance.durationHours +
+                'h × (' +
+                formatFormulaNumber(usual.avgCarbonGPerKwh) +
+                ' − ' +
+                formatFormulaNumber(best.avgCarbonGPerKwh) +
+                ')g/kWh = '
+            )
+          );
+          var strongC1 = document.createElement('strong');
+          strongC1.textContent = formatFormulaNumber(recommendation.carbonSavedOnceG) + 'g';
+          fCarbonOnce.appendChild(strongC1);
+
+          var fCarbonMonth = document.getElementById('formula-carbon-month');
+          fCarbonMonth.innerHTML = '';
+          fCarbonMonth.appendChild(
+            document.createTextNode('한 달(30회): ' + formatFormulaNumber(recommendation.carbonSavedOnceG) + 'g × 30 = ')
+          );
+          var strongC2 = document.createElement('strong');
+          strongC2.textContent = formatCarbonAmount(recommendation.carbonSavedMonthlyG);
+          fCarbonMonth.appendChild(strongC2);
+
+          var fCostOnce = document.getElementById('formula-cost-once');
+          fCostOnce.innerHTML = '';
+          fCostOnce.appendChild(
+            document.createTextNode(
+              selectedAppliance.powerKw +
+                'kW × ' +
+                selectedAppliance.durationHours +
+                'h × (' +
+                formatFormulaNumber(usual.avgTariffKrwPerKwh) +
+                ' − ' +
+                formatFormulaNumber(best.avgTariffKrwPerKwh) +
+                ')원/kWh = '
+            )
+          );
+          var strongK1 = document.createElement('strong');
+          strongK1.textContent = formatFormulaKrw(recommendation.costSavedOnceKrw);
+          fCostOnce.appendChild(strongK1);
+
+          var fCostMonth = document.getElementById('formula-cost-month');
+          fCostMonth.innerHTML = '';
+          fCostMonth.appendChild(
+            document.createTextNode('한 달(30회): ' + formatFormulaKrw(recommendation.costSavedOnceKrw) + ' × 30 = ')
+          );
+          var strongK2 = document.createElement('strong');
+          strongK2.textContent = formatFormulaKrw(recommendation.costSavedMonthlyKrw);
+          fCostMonth.appendChild(strongK2);
+
+          // Usual vs Best comparison
+          document.getElementById('cmp-usual-range').textContent = '원래 (' + usual.rangeLabel + ')';
+          document.getElementById('cmp-usual-avg').textContent = '평균 ' + Math.round(usual.avgCarbonGPerKwh) + 'g/kWh';
+          document.getElementById('cmp-usual-total').textContent =
+            '총 ' + formatCarbonAmount(usual.totalCarbonG) + ' · ' + formatKrw(usual.totalCostKrw);
+
+          document.getElementById('cmp-best-range').textContent = '추천 (' + best.rangeLabel + ')';
+          document.getElementById('cmp-best-avg').textContent = '평균 ' + Math.round(best.avgCarbonGPerKwh) + 'g/kWh';
+          document.getElementById('cmp-best-total').textContent =
+            '총 ' + formatCarbonAmount(best.totalCarbonG) + ' · ' + formatKrw(best.totalCostKrw);
+
+          // Top 3 windows
+          var top3List = document.getElementById('top3-list');
+          top3List.innerHTML = '';
+          recommendation.topWindows.forEach(function (win, idx) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'top3-btn';
+
+            var left = document.createElement('div');
+            left.style.cssText = 'display:flex;align-items:center;gap:0.625rem;min-width:0;';
+            var numSpan = document.createElement('span');
+            numSpan.className = 'mono-tabular';
+            numSpan.style.cssText = 'font-size:0.75rem;font-weight:700;color:#94a3b8;width:1rem;';
+            numSpan.textContent = (idx + 1) + '.';
+            var rngSpan = document.createElement('span');
+            rngSpan.className = 'mono-tabular';
+            rngSpan.style.cssText = 'font-size:0.875rem;font-weight:600;color:#0f172a;';
+            rngSpan.textContent = win.rangeLabel;
+            left.appendChild(numSpan);
+            left.appendChild(rngSpan);
+
+            var right = document.createElement('div');
+            right.className = 'mono-tabular';
+            right.style.cssText = 'display:flex;align-items:center;gap:0.75rem;font-size:0.75rem;color:#475569;flex-shrink:0;';
+            var avgSpan = document.createElement('span');
+            avgSpan.style.cssText = 'color:#047857;font-weight:600;';
+            avgSpan.textContent = Math.round(win.avgCarbonGPerKwh) + 'g/kWh';
+            var costSpan = document.createElement('span');
+            costSpan.textContent = formatKrw(win.totalCostKrw);
+            right.appendChild(avgSpan);
+            right.appendChild(costSpan);
+
+            btn.appendChild(left);
+            btn.appendChild(right);
+            btn.addEventListener('click', function () {
+              state.selectedHour = win.startHour;
+              renderAll();
+              navigateToSection('overview');
+            });
+            top3List.appendChild(btn);
+          });
+
+          // 5. Data & CSV Section
+          document.getElementById('data-source-strong').textContent = state.dataSourceLabel;
+          elResetCsvBtn.style.display = state.isCustomCsv ? 'inline-flex' : 'none';
+
+          var csvAlert = document.getElementById('csv-error-alert');
+          if (state.csvError) {
+            csvAlert.style.display = 'block';
+            csvAlert.textContent = state.csvError;
+          } else {
+            csvAlert.style.display = 'none';
+            csvAlert.textContent = '';
+          }
+
+          var tbody = document.getElementById('hourly-table-body');
+          tbody.innerHTML = '';
+          state.data.forEach(function (row) {
+            var grade = getCarbonGrade(row.carbonGPerKwh, thresholds);
+            var isCurr = row.hour === state.currentHour;
+            var tr = document.createElement('tr');
+            if (isCurr) tr.className = 'is-current-row';
+
+            function selectRowHour() {
+              state.selectedHour = row.hour;
+              renderAll();
+              navigateToSection('overview');
+            }
+
+            tr.addEventListener('click', selectRowHour);
+
+            var tdHour = document.createElement('td');
+            var hBtn = document.createElement('button');
+            hBtn.type = 'button';
+            hBtn.className = 'row-hour-btn mono-tabular';
+            hBtn.setAttribute('aria-label', formatHourLabel(row.hour) + ' 그래프에서 자세히 보기');
+            var hSpan = document.createElement('span');
+            hSpan.textContent = formatHourLabel(row.hour);
+            hBtn.appendChild(hSpan);
+            if (isCurr) {
+              var badge = document.createElement('span');
+              badge.style.cssText = 'margin-left:0.25rem;font-size:0.6875rem;font-weight:500;color:#047857;';
+              badge.textContent = '기준';
+              hBtn.appendChild(badge);
+            }
+            hBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              selectRowHour();
+            });
+            tdHour.appendChild(hBtn);
+
+            var tdGrade = document.createElement('td');
+            tdGrade.className = 'txt-' + grade;
+            tdGrade.textContent = getGradeLabel(grade);
+
+            var tdCarbon = document.createElement('td');
+            tdCarbon.className = 'text-right mono-tabular';
+            tdCarbon.textContent = Math.round(row.carbonGPerKwh) + 'g';
+
+            var tdRenewable = document.createElement('td');
+            tdRenewable.className = 'text-right mono-tabular';
+            tdRenewable.textContent = row.renewablePct.toFixed(1) + '%';
+
+            var tdTariff = document.createElement('td');
+            tdTariff.className = 'text-right mono-tabular';
+            tdTariff.textContent = Math.round(row.tariffKrwPerKwh).toLocaleString('ko-KR') + '원';
+
+            tr.appendChild(tdHour);
+            tr.appendChild(tdGrade);
+            tr.appendChild(tdCarbon);
+            tr.appendChild(tdRenewable);
+            tr.appendChild(tdTariff);
+            tbody.appendChild(tr);
+          });
+        }
+
+        // === Event Bindings ===
+        elCurrentHourSelect.addEventListener('change', function (e) {
+          var h = Number(e.target.value);
+          state.currentHour = h;
+          state.selectedHour = h;
+          renderAll();
+        });
+
+        elResetHourBtn.addEventListener('click', function () {
+          state.currentHour = state.realCurrentHour;
+          state.selectedHour = state.realCurrentHour;
+          renderAll();
+        });
+
+        elUsualHourSelect.addEventListener('change', function (e) {
+          state.usualStartHour = Number(e.target.value);
+          renderAll();
+        });
+
+        elFormulaToggleBtn.addEventListener('click', function () {
+          state.showFormula = !state.showFormula;
+          renderAll();
+        });
+
+        elQuickJumpBtn.addEventListener('click', function () {
+          setTab('appliances');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        elInspectChartBtn.addEventListener('click', function () {
+          var thresholds = computeCarbonThresholds(state.data);
+          var appliance =
+            APPLIANCES.find(function (a) { return a.id === state.selectedApplianceId; }) ||
+            APPLIANCES[0];
+          var rec = recommendAppliance(state.data, appliance, state.usualStartHour, thresholds);
+          state.selectedHour = rec.bestCarbonWindow.startHour;
+          renderAll();
+          navigateToSection('overview');
+        });
+
+        function triggerCsvUpload() {
+          setTab('data');
+          elFileInput.click();
+        }
+
+        elTopCsvBtn.addEventListener('click', triggerCsvUpload);
+        elUploadCsvBtn.addEventListener('click', function () {
+          elFileInput.click();
+        });
+
+        elFileInput.addEventListener('change', function (e) {
+          var file = e.target.files && e.target.files[0];
+          if (file) {
+            var reader = new FileReader();
+            reader.onload = function () {
+              var text = typeof reader.result === 'string' ? reader.result : '';
+              var parsed = parseElectricityCsv(text);
+              if (!parsed.ok) {
+                state.csvError = parsed.error;
+                setTab('data');
+                renderAll();
+                return;
+              }
+              state.csvError = null;
+              state.data = parsed.data;
+              state.isCustomCsv = true;
+              state.dataSourceLabel = file.name;
+              safeStorageSet(STORAGE_CSV_KEY, text);
+              safeStorageSet(STORAGE_NAME_KEY, file.name);
+              renderAll();
+            };
+            reader.onerror = function () {
+              state.csvError = '파일을 읽는 중 오류가 발생했습니다. UTF-8 CSV 파일인지 확인해주세요.';
+              setTab('data');
+              renderAll();
+            };
+            reader.readAsText(file, 'utf-8');
+          }
+          e.target.value = '';
+        });
+
+        elDownloadCsvBtn.addEventListener('click', function () {
+          var csvContent = serializeElectricityCsv(state.data);
+          var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          var url = URL.createObjectURL(blob);
+          var link = document.createElement('a');
+          link.href = url;
+          link.download = 'hourly_electricity.csv';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        });
+
+        elResetCsvBtn.addEventListener('click', function () {
+          var parsed = parseElectricityCsv(DEFAULT_ELECTRICITY_CSV);
+          state.csvError = null;
+          state.data = parsed.data;
+          state.isCustomCsv = false;
+          state.dataSourceLabel = '기본 내장 CSV';
+          safeStorageRemove(STORAGE_CSV_KEY);
+          safeStorageRemove(STORAGE_NAME_KEY);
+          renderAll();
+        });
+
+        var navLinks = document.querySelectorAll('[data-nav]');
+        for (var i = 0; i < navLinks.length; i++) {
+          navLinks[i].addEventListener('click', function (e) {
+            e.preventDefault();
+            navigateToSection(this.getAttribute('data-nav'));
+          });
+        }
+
+        var bottomTabBtns = document.querySelectorAll('.bottom-tab-btn');
+        for (var j = 0; j < bottomTabBtns.length; j++) {
+          bottomTabBtns[j].addEventListener('click', function () {
+            setTab(this.getAttribute('data-tab'));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+
+        window.setInterval(function () {
+          var nextHour = new Date().getHours();
+          if (nextHour !== state.realCurrentHour) {
+            if (state.currentHour === state.realCurrentHour) {
+              state.currentHour = nextHour;
+              if (state.selectedHour === state.realCurrentHour) {
+                state.selectedHour = nextHour;
+              }
+            }
+            state.realCurrentHour = nextHour;
+            renderAll();
+          }
+        }, 60000);
+
+        setTab('overview');
+        renderAll();
+      })();
+    </script>
+  </body>
+</html>
